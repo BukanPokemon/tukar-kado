@@ -2,6 +2,7 @@ export const en = {
   language: {
     flag: "🇺🇸",
     name: "English",
+    id: "Indonesian",
   },
   errors: {
     needMoreParticipants: "Need at least 2 participants!",
@@ -20,50 +21,63 @@ export const en = {
     sponsor: "Support me on GitHub",
     title: "Secret Santa Planner",
     explanation: [
-      "Welcome! This tool will help you arrange your holiday gift exchanges. Simply list all participants, and we'll randomly assign pairings according to the rules you set.",
-      "You'll receive a unique link for each participant, which you'll have to share yourself (via email, Slack, etc). [<exampleLink>Example link</exampleLink>]",
-      "No accounts, no emails, no hassle, and all hosted on <githubLink>GitHub Pages</githubLink> with no backend!",
-    ].map(line => `<p>${line}</p>`).join(''),
-    exampleLink: "Example link",
+      "Welcome! This tool will help you arrange your holiday gift exchanges easily.",
+      "Add participants manually or upload a CSV with all participant details (Name, Address, Phone, Gift Hint, Notes).",
+      "Set pairing rules for participants (force a pairing or prevent a pairing).",
+      "Generate Secret Santa pairings automatically.",
+      "Each participant will receive a unique link showing who they should gift, along with Gift Hint, Address, Phone, Notes, and optional instructions.",
+      "No accounts, emails, or backend required — everything runs in your browser and is hosted on GitHub Pages.",
+      "Enjoy a fun and stress-free Secret Santa experience! 🎄",
+      "You will receive a unique link for each participant, which you must share yourself (via email, Slack, etc). [Example link]"
+    ]
   },
   pairing: {
     title: "Your Secret Santa Assignment",
     assignment: "Welcome, <name/>! You have been picked to get a gift for:",
-    loading: "Loading...",
     error: "Failed to decrypt the message. The link might be invalid.",
-    startYourOwn: "Start a Secret Santa!"
+    startYourOwn: "Start a Secret Santa yourself!",
+    address: "Address",
+    phone: "Phone",
+    notes: "Notes",
+    rulesReminder: "{{instructions}}" // custom instructions
   },
   participants: {
     title: "Participants",
-    generationWarning: "Important: Any change made to the participant list or settings will require creating new pairings. Existing links won't be retroactively modified.", 
+    generationWarning: "Important: Any change made to the participant list or settings will require creating new pairings. Existing links won't be updated.",
     addPerson: "Add Person",
     generatePairs: "Generate Pairings",
     enterName: "Enter participant name",
     editRules: "Edit rules",
     removeParticipant: "Remove participant",
-    rulesCount_one: "{{count}} rule set",
-    rulesCount_other: "{{count}} rules set",
+    rulesCount_one: "{{count}} rule",
+    rulesCount_other: "{{count}} rules",
     switchToFormView: "Switch to form view",
     switchToTextView: "Switch to text view"
   },
   rules: {
     title: "Rules for {{name}}",
+    hintLabel: "Gift Hint",
+    hintPlaceholder: "Enter a gift hint (optional)",
+    addressLabel: "Address",
+    addressPlaceholder: "Enter address (optional)",
+    phoneLabel: "Phone",
+    phonePlaceholder: "Enter phone (optional)",
+    notesLabel: "Notes",
+    notesPlaceholder: "Enter additional notes (optional)",
+    addMustRule: "Force a Pairing",
+    addMustNotRule: "Prevent a Pairing",
     mustBePairedWith: "Must be paired with",
     mustNotBePairedWith: "Must not be paired with",
     selectParticipant: "Select another participant",
     removeRule: "Remove rule",
-    addMustRule: "Force a Pairing",
-    addMustNotRule: "Prevent a Pairing",
     cancel: "Cancel",
-    saveRules: "Save Rules",
-    hintLabel: 'Gift Hint',
-    hintPlaceholder: 'Enter a hint about gift preferences (optional)',
+    saveRules: "Save Rules"
   },
   links: {
     title: "Links to Share",
-    warningParticipantsChanged: "Warning: Participants or rules have changed since the last time these links were generated.",
+    warningParticipantsChanged: "Warning: Participants or rules have changed since these links were generated.",
     resetAssignments: "Regenerate Pairings",
-    shareInstructions: "Only share those links with their corresponding gift giver",
+    shareInstructions: "Only share these links with the corresponding gift giver",
     exportCSV: "Export as CSV",
     copySecretLink: "Copy Secret Link",
     linkCopied: "Added to clipboard!",
@@ -73,6 +87,6 @@ export const en = {
     title: "Settings",
     instructions: "Additional Instructions",
     instructionsPlaceholder: "e.g., budget, date, location...",
-    instructionsHelp: "They will be shown to all participants on their assignment page. Keep it short: it increases the length of the links."
-  },
-}; 
+    instructionsHelp: "They will be shown to all participants on their assignment page. Keep it short to avoid long links."
+  }
+};

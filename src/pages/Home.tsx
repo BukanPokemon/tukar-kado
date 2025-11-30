@@ -17,72 +17,12 @@ import { Settings } from '../components/Settings';
 import { useLocalStorage } from '../hooks/useLocalStorage';
 import { Layout } from '../components/Layout';
 
-function migrateParticipants(value: any) {
-  // The first release of the new tool used an array of participants.
-  if (Array.isArray(value)) {
-    const migrated: Record<string, Participant> = {};
-    const ids = new Map<string, string>();
-
-    for (const participant of value) {
-      const id = crypto.randomUUID();
-      ids.set(participant.name, id);
-    }
-
-    for (const participant of value) {
-      const id = ids.get(participant.name)!;
-
-      migrated[id] = {
-        id,
-        name: participant.name,
-        rules: participant.rules.map(({type, targetParticipant}: {type: string, targetParticipant: string}) => {
-          const targetParticipantId = ids.get(targetParticipant);
-          return targetParticipantId ? {type, targetParticipantId} : null;
-        }).filter((rule: any): rule is Rule => {
-          return !!rule;
-        }),
-      };
-
-      console.log(migrated);
-    }
-
-    return migrated;
-  }
-
-  return value;
-}
-
-function migrateAssignments(value: any) {
-  if (Array.isArray(value)) {
-    if (value.length === 0) {
-      return null;
-    }
-
-    console.log({
-      hash: ``,
-      pairings: value.map(([giver, receiver]) => ({
-        giver: {id: ``, name: giver},
-        receiver: {id: ``, name: receiver},
-      })),
-    });
-
-    return {
-      hash: ``,
-      pairings: value.map(([giver, receiver]) => ({
-        giver: {id: ``, name: giver},
-        receiver: {id: ``, name: receiver},
-      })),
-    };
-  }
-
-  return value;
-}
-
 export function Home() {
   const { t } = useTranslation();
   const [isTextView, setIsTextView] = useState(false);
 
-  const [participants, setParticipants] = useLocalStorage<Record<string, Participant>>('secretSantaParticipants', {}, migrateParticipants);
-  const [assignments, setAssignments] = useLocalStorage<GeneratedPairs | null>('secretSantaAssignments', null, migrateAssignments);
+  const [participants, setParticipants] = useLocalStorage<Record<string, Participant>>('secretSantaParticipants', {}, (v) => v);
+  const [assignments, setAssignments] = useLocalStorage<GeneratedPairs | null>('secretSantaAssignments', null, (v) => v);
   const [instructions, setInstructions] = useLocalStorage<string>('secretSantaInstructions', '');
 
   const [selectedParticipantId, setSelectedParticipantId] = useState<string | null>(null);
@@ -91,14 +31,13 @@ export function Home() {
 
   const handleGeneratePairs = () => {
     const assignments = generatePairs(participants);
-    if (assignments === null) {
+    if (!assignments) {
       alert(Object.keys(participants).length < 2 
         ? t('errors.needMoreParticipants')
         : t('errors.invalidPairs')
       );
       return;
     }
-
     setAssignments(assignments);
     setOpenSection('links');
   };
@@ -137,14 +76,9 @@ export function Home() {
                 {t('home.title')}
               </h1>
               <div className="space-y-4 text-gray-600">
-                <Trans
-                  i18nKey="home.explanation"
-                  components={{
-                    p: <p/>,
-                    githubLink: <a className="text-blue-500 underline" href="https://github.com/arcanis/secretsanta/" target="_blank"/>,
-                    exampleLink: <Link className="text-blue-500 underline" to="/pairing?from=Simba&to=c1w%2FUV9lXC12U578BHPYZhXxhsK0fPTqoQDU9CA7W581P%2BM%3D"/>,
-                  }}
-                />
+                {t('home.explanation', { returnObjects: true }).map((line: string, i: number) => (
+                  <p key={i} dangerouslySetInnerHTML={{ __html: line }} />
+                ))}
               </div>
             </div>
           </PostCard>
