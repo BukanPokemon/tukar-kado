@@ -1,3 +1,4 @@
+// RulesModal.tsx
 import { useState, useEffect } from "react";
 import { X, Plus, Link, LinkBreak } from "@phosphor-icons/react";
 import { Participant, Rule } from '../types';
@@ -21,22 +22,31 @@ export function RulesModal({
 }: RulesModalProps) {
   const { t } = useTranslation();
   const participant = participants[participantId];
+
   const [localRules, setLocalRules] = useState<Rule[]>(participant.rules);
   const [localHint, setLocalHint] = useState<string>(participant.hint || '');
+  const [localAddress, setLocalAddress] = useState<string>(participant.address || '');
+  const [localPhone, setLocalPhone] = useState<string>(participant.phone || '');
+  const [localNotes, setLocalNotes] = useState<string>(participant.notes || '');
+
+  // Update local state when participant changes
+  useEffect(() => {
+    setLocalHint(participant.hint || '');
+    setLocalAddress(participant.address || '');
+    setLocalPhone(participant.phone || '');
+    setLocalNotes(participant.notes || '');
+    setLocalRules(participant.rules || []);
+  }, [participant]);
 
   // Add escape key handler
   useEffect(() => {
     const handleEscape = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') {
-        onClose();
-      }
+      if (event.key === 'Escape') onClose();
     };
 
     if (isOpen) {
       document.addEventListener('keydown', handleEscape);
-      return () => {
-        document.removeEventListener('keydown', handleEscape);
-      };
+      return () => document.removeEventListener('keydown', handleEscape);
     }
   }, [isOpen, onClose]);
 
@@ -58,6 +68,9 @@ export function RulesModal({
     onChangeParticipants(produce(participants, draft => {
       draft[participantId].rules = localRules;
       draft[participantId].hint = localHint || undefined;
+      draft[participantId].address = localAddress || undefined;
+      draft[participantId].phone = localPhone || undefined;
+      draft[participantId].notes = localNotes || undefined;
     }));
     onClose();
   };
@@ -65,18 +78,19 @@ export function RulesModal({
   const hasMustRule = localRules.some(rule => rule.type === 'must');
   const hasMustNotRule = localRules.some(rule => rule.type === 'mustNot');
 
-  if (!isOpen)
-      return null;
+  if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-lg p-6 max-w-xl w-full">
+      <div className="bg-white rounded-lg p-6 max-w-xl w-full space-y-4">
+
         <h2 className="text-xl font-bold mb-4">
           {t('rules.title', { name: participant.name })}
         </h2>
-        
-        <div className="mb-6">
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+
+        {/* Gift Hint */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
             {t('rules.hintLabel')}
           </label>
           <input
@@ -87,15 +101,47 @@ export function RulesModal({
             className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
           />
         </div>
-        
-        <div className="space-y-4 mb-6">
+
+        {/* Address */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Address</label>
+          <input
+            type="text"
+            value={localAddress}
+            onChange={(e) => setLocalAddress(e.target.value)}
+            className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+          />
+        </div>
+
+        {/* Phone */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Phone</label>
+          <input
+            type="text"
+            value={localPhone}
+            onChange={(e) => setLocalPhone(e.target.value)}
+            className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+          />
+        </div>
+
+        {/* Notes */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Notes</label>
+          <textarea
+            value={localNotes}
+            onChange={(e) => setLocalNotes(e.target.value)}
+            className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+          />
+        </div>
+
+        {/* Pairing Rules */}
+        <div className="space-y-4">
           {localRules.map((rule, index) => (
             <div key={index} className="flex gap-2 items-center">
               <span>
-                {rule.type === 'must' 
+                {rule.type === 'must'
                   ? t('rules.mustBePairedWith')
-                  : t('rules.mustNotBePairedWith')
-                }
+                  : t('rules.mustNotBePairedWith')}
               </span>
               <select
                 value={rule.targetParticipantId}
@@ -107,8 +153,7 @@ export function RulesModal({
                   .filter(p => p.id !== participantId)
                   .map((p) => (
                     <option key={p.id} value={p.id}>{p.name}</option>
-                  ))
-                }
+                  ))}
               </select>
               <button
                 onClick={() => removeRule(index)}
@@ -121,13 +166,14 @@ export function RulesModal({
           ))}
         </div>
 
-        <div className="flex gap-2 mb-6">
+        {/* Add Rule Buttons */}
+        <div className="flex gap-2">
           <button
             onClick={() => addRule('must')}
             disabled={hasMustNotRule}
             className={`flex-1 p-2 rounded flex items-center justify-center gap-2
-              ${hasMustNotRule 
-                ? 'bg-gray-400 cursor-not-allowed' 
+              ${hasMustNotRule
+                ? 'bg-gray-400 cursor-not-allowed'
                 : 'bg-blue-500 hover:bg-blue-600'} text-white`}
           >
             <Link size={20} />
@@ -137,8 +183,8 @@ export function RulesModal({
             onClick={() => addRule('mustNot')}
             disabled={hasMustRule}
             className={`flex-1 p-2 rounded flex items-center justify-center gap-2
-              ${hasMustRule 
-                ? 'bg-gray-400 cursor-not-allowed' 
+              ${hasMustRule
+                ? 'bg-gray-400 cursor-not-allowed'
                 : 'bg-red-500 hover:bg-red-600'} text-white`}
           >
             <LinkBreak size={20} />
@@ -146,6 +192,7 @@ export function RulesModal({
           </button>
         </div>
 
+        {/* Modal Buttons */}
         <div className="flex justify-end gap-2">
           <button
             onClick={onClose}
@@ -163,4 +210,4 @@ export function RulesModal({
       </div>
     </div>
   );
-} 
+}
