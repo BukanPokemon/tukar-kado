@@ -17,7 +17,8 @@ export const en = {
     line: "Line {{number}}"
   },
   home: {
-    vanity: "Project started in winter 2015 by Maël",
+    vanity: 'Credits: <a href="https://github.com/arcanis/secretsanta" target="_blank" class="underline hover:text-gray-600">Github</a>',
+    vanityUrl: "https://github.com/arcanis/secretsanta",
     sponsor: "Support me on GitHub",
     title: "Secret Santa Planner",
     explanation: [

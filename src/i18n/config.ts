@@ -19,6 +19,7 @@ i18n
   .init({
     resources,
     fallbackLng: 'id', // <-- default ke Bahasa Indonesia
+    lng: 'id',          // force default to Indonesian
     interpolation: {
       escapeValue: false
     }
