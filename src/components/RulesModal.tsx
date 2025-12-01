@@ -1,7 +1,6 @@
-// RulesModal.tsx
 import { useState, useEffect } from "react";
-import { X, Plus, Link, LinkBreak } from "@phosphor-icons/react";
-import { Participant, Rule } from '../types';
+import { X, Link, LinkBreak } from "@phosphor-icons/react";
+import { Participant, Rule, ReceiverData } from '../types';
 import { useTranslation } from 'react-i18next';
 import { produce } from "immer";
 
@@ -29,40 +28,24 @@ export function RulesModal({
   const [localPhone, setLocalPhone] = useState<string>(participant.phone || '');
   const [localNotes, setLocalNotes] = useState<string>(participant.notes || '');
 
-  // Update local state when participant changes
-  useEffect(() => {
-    setLocalHint(participant.hint || '');
-    setLocalAddress(participant.address || '');
-    setLocalPhone(participant.phone || '');
-    setLocalNotes(participant.notes || '');
-    setLocalRules(participant.rules || []);
-  }, [participant]);
-
-  // Add escape key handler
+  // Escape key closes modal
   useEffect(() => {
     const handleEscape = (event: KeyboardEvent) => {
       if (event.key === 'Escape') onClose();
     };
-
     if (isOpen) {
       document.addEventListener('keydown', handleEscape);
       return () => document.removeEventListener('keydown', handleEscape);
     }
   }, [isOpen, onClose]);
 
-  const addRule = (type: 'must' | 'mustNot') => {
-    setLocalRules([...localRules, { type, targetParticipantId: '' }]);
-  };
-
+  const addRule = (type: 'must' | 'mustNot') => setLocalRules([...localRules, { type, targetParticipantId: '' }]);
   const updateRule = (index: number, targetParticipantId: string) => {
     const newRules = [...localRules];
     newRules[index].targetParticipantId = targetParticipantId;
     setLocalRules(newRules);
   };
-
-  const removeRule = (index: number) => {
-    setLocalRules(localRules.filter((_, i) => i !== index));
-  };
+  const removeRule = (index: number) => setLocalRules(localRules.filter((_, i) => i !== index));
 
   const handleSave = () => {
     onChangeParticipants(produce(participants, draft => {
@@ -75,135 +58,119 @@ export function RulesModal({
     onClose();
   };
 
-  const hasMustRule = localRules.some(rule => rule.type === 'must');
-  const hasMustNotRule = localRules.some(rule => rule.type === 'mustNot');
+  const hasMustRule = localRules.some(r => r.type === 'must');
+  const hasMustNotRule = localRules.some(r => r.type === 'mustNot');
 
   if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-lg p-6 max-w-xl w-full space-y-4">
-
+      <div className="bg-white rounded-lg p-6 max-w-xl w-full">
         <h2 className="text-xl font-bold mb-4">
           {t('rules.title', { name: participant.name })}
         </h2>
 
-        {/* Gift Hint */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            {t('rules.hintLabel')}
-          </label>
-          <input
-            type="text"
-            value={localHint}
-            onChange={(e) => setLocalHint(e.target.value)}
-            placeholder={t('rules.hintPlaceholder')}
-            className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-          />
+        <div className="space-y-4 mb-6">
+          {/* Hint */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">{t('rules.hintLabel')}</label>
+            <input
+              type="text"
+              value={localHint}
+              onChange={e => setLocalHint(e.target.value)}
+              placeholder={t('rules.hintPlaceholder')}
+              className="w-full p-2 border rounded"
+            />
+          </div>
+
+          {/* Address */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">{t('rules.addressLabel', 'Address')}</label>
+            <input
+              type="text"
+              value={localAddress}
+              onChange={e => setLocalAddress(e.target.value)}
+              placeholder={t('rules.addressPlaceholder', 'Enter address (optional)')}
+              className="w-full p-2 border rounded"
+            />
+          </div>
+
+          {/* Phone */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">{t('rules.phoneLabel', 'Phone')}</label>
+            <input
+              type="text"
+              value={localPhone}
+              onChange={e => setLocalPhone(e.target.value)}
+              placeholder={t('rules.phonePlaceholder', 'Enter phone (optional)')}
+              className="w-full p-2 border rounded"
+            />
+          </div>
+
+          {/* Notes */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">{t('rules.notesLabel', 'Notes')}</label>
+            <textarea
+              value={localNotes}
+              onChange={e => setLocalNotes(e.target.value)}
+              placeholder={t('rules.notesPlaceholder', 'Additional notes (optional)')}
+              className="w-full p-2 border rounded"
+            />
+          </div>
         </div>
 
-        {/* Address */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Address</label>
-          <input
-            type="text"
-            value={localAddress}
-            onChange={(e) => setLocalAddress(e.target.value)}
-            className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-          />
-        </div>
-
-        {/* Phone */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Phone</label>
-          <input
-            type="text"
-            value={localPhone}
-            onChange={(e) => setLocalPhone(e.target.value)}
-            className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-          />
-        </div>
-
-        {/* Notes */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Notes</label>
-          <textarea
-            value={localNotes}
-            onChange={(e) => setLocalNotes(e.target.value)}
-            className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-          />
-        </div>
-
-        {/* Pairing Rules */}
-        <div className="space-y-4">
+        {/* Pairing rules */}
+        <div className="space-y-4 mb-6">
           {localRules.map((rule, index) => (
             <div key={index} className="flex gap-2 items-center">
               <span>
-                {rule.type === 'must'
-                  ? t('rules.mustBePairedWith')
-                  : t('rules.mustNotBePairedWith')}
+                {rule.type === 'must' ? t('rules.mustBePairedWith') : t('rules.mustNotBePairedWith')}
               </span>
               <select
                 value={rule.targetParticipantId}
-                onChange={(e) => updateRule(index, e.target.value)}
+                onChange={e => updateRule(index, e.target.value)}
                 className="flex-1 p-2 border rounded"
               >
                 <option value="">{t('rules.selectParticipant')}</option>
                 {Object.values(participants)
                   .filter(p => p.id !== participantId)
-                  .map((p) => (
-                    <option key={p.id} value={p.id}>{p.name}</option>
-                  ))}
+                  .map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
               </select>
-              <button
-                onClick={() => removeRule(index)}
-                className="p-2 text-red-500 hover:text-red-700"
-                aria-label={t('rules.removeRule')}
-              >
-                <X size={20} weight="bold" />
+              <button onClick={() => removeRule(index)} className="p-2 text-red-500 hover:text-red-700">
+                <X size={20} weight="bold"/>
               </button>
             </div>
           ))}
         </div>
 
-        {/* Add Rule Buttons */}
-        <div className="flex gap-2">
+        {/* Add rule buttons */}
+        <div className="flex gap-2 mb-6">
           <button
             onClick={() => addRule('must')}
             disabled={hasMustNotRule}
             className={`flex-1 p-2 rounded flex items-center justify-center gap-2
-              ${hasMustNotRule
-                ? 'bg-gray-400 cursor-not-allowed'
-                : 'bg-blue-500 hover:bg-blue-600'} text-white`}
+              ${hasMustNotRule ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-500 hover:bg-blue-600'} text-white`}
           >
-            <Link size={20} />
+            <Link size={20}/>
             {t('rules.addMustRule')}
           </button>
           <button
             onClick={() => addRule('mustNot')}
             disabled={hasMustRule}
             className={`flex-1 p-2 rounded flex items-center justify-center gap-2
-              ${hasMustRule
-                ? 'bg-gray-400 cursor-not-allowed'
-                : 'bg-red-500 hover:bg-red-600'} text-white`}
+              ${hasMustRule ? 'bg-gray-400 cursor-not-allowed' : 'bg-red-500 hover:bg-red-600'} text-white`}
           >
-            <LinkBreak size={20} />
+            <LinkBreak size={20}/>
             {t('rules.addMustNotRule')}
           </button>
         </div>
 
-        {/* Modal Buttons */}
+        {/* Save/Cancel */}
         <div className="flex justify-end gap-2">
-          <button
-            onClick={onClose}
-            className="px-4 py-2 text-gray-600 hover:text-gray-800"
-          >
+          <button onClick={onClose} className="px-4 py-2 text-gray-600 hover:text-gray-800">
             {t('rules.cancel')}
           </button>
-          <button
-            onClick={handleSave}
-            className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
-          >
+          <button onClick={handleSave} className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600">
             {t('rules.saveRules')}
           </button>
         </div>

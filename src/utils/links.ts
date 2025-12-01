@@ -2,6 +2,9 @@
 import { encryptText } from "./crypto";
 import { ReceiverData } from "../types";
 
+/**
+ * Generate the unique Secret Santa assignment link for a giver.
+ */
 export async function generateAssignmentLink(
   giver: string,
   receiver: ReceiverData,
@@ -9,7 +12,7 @@ export async function generateAssignmentLink(
 ) {
   const baseUrl = `${window.location.origin}${window.location.pathname.replace(/\/[^/]*$/, '')}`;
 
-  // Always encrypt a JSON object with all possible fields
+  // Encrypt all receiver fields as JSON
   const dataToEncrypt = JSON.stringify(receiver);
   const encryptedReceiver = await encryptText(dataToEncrypt);
 
@@ -25,10 +28,10 @@ export async function generateAssignmentLink(
   return `${baseUrl}/pairing?${params.toString()}`;
 }
 
-// Optional CSV generator
+/**
+ * Generate CSV content from an array of [Giver, SecretSantaLink].
+ * Does NOT include header; caller should provide it if needed.
+ */
 export function generateCSV(assignments: [string, string][]) {
-  const csvContent = assignments
-    .map(([giver, receiver]) => `${giver}\t${receiver}`)
-    .join('\n');
-  return `Giver\tReceiver\n${csvContent}`;
+  return assignments.map(([giver, link]) => `${giver}\t${link}`).join("\n");
 }
