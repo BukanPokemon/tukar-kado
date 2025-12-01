@@ -53,17 +53,17 @@ export function SideMenu({ children }: { children?: React.ReactNode }) {
     : SUPPORTED_LANGUAGES;
 
   return (
-    <div className="lg:absolute top-4 right-4 z-50 flex flex-row items-center space-x-2">
-      {children}
-      {languages.map((language) => (
-        <MenuItem
-          key={language}
-          icon={<Flag className={`h-3`} code={language} />}
+    <div className="lg:absolute top-4 left-4 z-50 flex flex-row items-center space-x-2">
+      {SUPPORTED_LANGUAGES.map((language) => (
+        <MenuItem 
+          key={language} 
+          icon={<Flag className="h-3" code={language} />} 
           onClick={() => i18n.changeLanguage(language)}
         >
           {t(`language.name`, { lng: language })}
         </MenuItem>
       ))}
     </div>
+
   );
 }
