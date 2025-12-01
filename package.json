@@ -2,11 +2,12 @@
   "name": "tukar-kado",
   "private": true,
   "scripts": {
-    "dev": "vite",
-    "build": "vite build",
-    "preview": "vite preview",
-    "deploy": "yarn build && copy /Y dist\\index.html dist\\404.html && gh-pages -d dist"
-  },
+  "dev": "vite",
+  "build": "vite build",
+  "preview": "vite preview",
+  "deploy": "yarn build && cpy dist/index.html dist/404.html && gh-pages -d dist"
+}
+,
   "packageManager": "yarn@4.5.1",
   "dependencies": {
     "@fontsource/cherry-swash": "^5.1.0",
@@ -35,6 +36,7 @@
     "@types/react-world-flags": "^1",
     "@vitejs/plugin-react": "^4.3.4",
     "autoprefixer": "^10.4.20",
+    "cpy-cli": "^6.0.0",
     "gh-pages": "^6.3.0",
     "postcss": "^8.4.49",
     "tailwindcss": "^3.4.15",
