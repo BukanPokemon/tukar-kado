@@ -17,7 +17,8 @@ export const id = {
     line: "Baris {{number}}"
   },
   home: {
-    vanity: "Project dimulai pada musim dingin 2015 oleh Maël",
+    vanity: 'Credits: <a href="https://github.com/arcanis/secretsanta" target="_blank" class="underline hover:text-gray-600">Github</a>',
+    vanityUrl: "https://github.com/arcanis/secretsanta",
     sponsor: "Dukung saya di GitHub",
     title: "Perencana Secret Santa",
     explanation: [

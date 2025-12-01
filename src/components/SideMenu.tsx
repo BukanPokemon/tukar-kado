@@ -3,7 +3,7 @@ import { SUPPORTED_LANGUAGES } from '../i18n/config';
 import * as Flags from 'country-flag-icons/react/3x2';
 import { Link } from 'react-router-dom';
 
-function Flag({className, code}: {className?: string, code: string}) {
+function Flag({ className, code }: { className?: string; code: string }) {
   const upperCode = code.toUpperCase();
   const fixedCode = upperCode === `EN` ? `GB` : upperCode;
 
@@ -11,7 +11,17 @@ function Flag({className, code}: {className?: string, code: string}) {
   return <FlagComponent className={className} />;
 }
 
-export function MenuItem({icon, to, onClick, children}: {icon: React.ReactNode, to?: string, onClick?: () => void, children: React.ReactNode}) {
+export function MenuItem({
+  icon,
+  to,
+  onClick,
+  children
+}: {
+  icon: React.ReactNode;
+  to?: string;
+  onClick?: () => void;
+  children: React.ReactNode;
+}) {
   const contents = (
     <div className="flex items-center select-none">
       <div className={`flex items-center justify-center w-6 mr-2 text-center`}>{icon}</div>
@@ -23,24 +33,37 @@ export function MenuItem({icon, to, onClick, children}: {icon: React.ReactNode, 
 
   const render = to
     ? to.startsWith(`https://`)
-      ? <a className={className} href={to} target={`_blank`}>{contents}</a>
+      ? (
+        <a className={className} href={to} target={`_blank`} rel="noopener noreferrer">
+          {contents}
+        </a>
+      )
       : <Link className={className} to={to}>{contents}</Link>
     : <div className={className} onClick={onClick}>{contents}</div>;
 
   return render;
 }
 
-export function SideMenu({children}: {children?: React.ReactNode}) {
+export function SideMenu({ children }: { children?: React.ReactNode }) {
   const { i18n, t } = useTranslation();
 
+  // Put 'id' first, then the rest
+  const languages = SUPPORTED_LANGUAGES.includes('id')
+    ? ['id', ...SUPPORTED_LANGUAGES.filter((l) => l !== 'id')]
+    : SUPPORTED_LANGUAGES;
+
   return (
-    <div className="lg:absolute top-4 left-4 z-50 flex flex-col items-start space-y-2">
+    <div className="lg:absolute top-4 right-4 z-50 flex flex-row items-center space-x-2">
       {children}
-      {SUPPORTED_LANGUAGES.map((language) => (
-        <MenuItem key={language} icon={<Flag className={`h-3`} code={language} />} onClick={() => i18n.changeLanguage(language)}>
-          {t(`language.name`, {lng: language})}
+      {languages.map((language) => (
+        <MenuItem
+          key={language}
+          icon={<Flag className={`h-3`} code={language} />}
+          onClick={() => i18n.changeLanguage(language)}
+        >
+          {t(`language.name`, { lng: language })}
         </MenuItem>
       ))}
     </div>
   );
-} 
+}
