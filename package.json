@@ -5,7 +5,7 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "deploy": "gh-pages -d dist"
+    "deploy": "yarn build && cp -f dist/index.html dist/404.html && gh-pages -d dist"
   },
   "packageManager": "yarn@4.5.1",
   "dependencies": {
